@@ -1,11 +1,21 @@
 const express = require('express')
 const schema = require('./schema/schema')
 
+//An ORM that helps communicate with the MongoDB Database
+const mongoose = require('mongoose')
+
 //express grapql module - allows express to communicate with graphql
 const graphqlHTTP = require('express-graphql')
 
 //invoke function to create app 
 const app = express()
+
+//connect to MongoDB Atlas Database
+mongoose.connect('mongodb+srv://chiquis:test123@cluster0-a3p6u.mongodb.net/test?retryWrites=true&w=majority')
+
+mongoose.connection.once('open', () => {
+    console.log('connected to database')
+})
 
 //middleware 
 app.use('/graphql', graphqlHTTP({

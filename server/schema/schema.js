@@ -11,14 +11,18 @@ const {
     GraphQLString, 
     GraphQLSchema, 
     GraphQLID,
-    GraphQLInt} = graphql
+    GraphQLInt,
+    GraphQLList} = graphql
 
 
 //dummy data 
 var books = [
     {name: 'Name of the Wind', genre: 'Fantasy', id:'1', authorid: '1'},
     {name: 'The Final Empire', genre: 'Fantasy', id:'2', authorid: '2'},
-    {name: 'The Long Earth',  genre: 'Sci-Fi', id:'3', authorid: '3'}
+    {name: 'The Long Earth',  genre: 'Sci-Fi', id:'3', authorid: '3'},
+    {name: 'Cat in the Hat',  genre: 'Fantasy', id:'4', authorid: '2'},
+    {name: 'Harry Potter',  genre: 'Fantasy', id:'5', authorid: '3'},
+    {name: 'Goosebumps',  genre: 'Fantasy', id:'6', authorid: '3'}
 ]
 
 var authors = [
@@ -31,7 +35,7 @@ var authors = [
 //Define our first object type
 const BookType = new GraphQLObjectType({
     name: 'Book',
-    //multiple types that have reference to one another so "fields" needs to be a function  
+    //wrap fields in a function so that BookType has access to AuthorType and vice versa. Handles async process  
     fields: () => ({
         id: {type: GraphQLID},
         name: {type: GraphQLString},
@@ -51,7 +55,13 @@ const AuthorType = new GraphQLObjectType({
     fields: () => ({
         id: {type: GraphQLID},
         name: {type: GraphQLString},
-        age: {type: GraphQLInt}
+        age: {type: GraphQLInt},
+        books: {
+            type: new GraphQLList(BookType),
+            resolve(parent, args){
+                return _.filter(books, {authorid: parent.id})
+            }
+        }
     })
 })
 
@@ -75,6 +85,18 @@ const RootQuery = new GraphQLObjectType({
             args: {id: {type: GraphQLID}},
             resolve(parent, args){
                 return _.find(authors, {id:args.id})
+            }
+        },
+        books: {
+            type: new GraphQLList(BookType),
+            resolve(parent, args){
+                return books 
+            }
+        },
+        authors: {
+            type: new GraphQLList(AuthorType),
+            resolve(parent, args){
+                return authors
             }
         }
     }
