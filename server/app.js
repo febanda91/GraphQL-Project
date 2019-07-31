@@ -10,6 +10,11 @@ const graphqlHTTP = require('express-graphql')
 //invoke function to create app 
 const app = express()
 
+
+//allow cross-origin requests 
+const cors = require('cors')
+app.use(cors())
+
 //connect to MongoDB Atlas Database
 mongoose.connect('mongodb+srv://chiquis:test123@cluster0-a3p6u.mongodb.net/test?retryWrites=true&w=majority')
 
